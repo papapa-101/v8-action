@@ -1,21 +1,12 @@
-#===================================================
-# Description: Build v8 enginer using GitHub Actions
-# Author: t1an5t
-#===================================================
-
-
-name: BUILD v8
+name: BUILD and Complie v8
 
 on:
   push:
     branches: [ master ]
-  # watch:
-  #   types: started
 
 env:
-  PATCH_FLAG: true
-  COMMIT: 6dc88c191f5ecc5389dc26efa3ca0907faef3598
-  DEPOT_UPLOAD: false
+  PATCH_FLAG: false #给v8打上patch，不需要则false
+  COMMIT: 9.3.345.16 #v8对应的版本号
   SRC_UPLOAD: true
   BINARY_UPLOAD: true
 
@@ -24,18 +15,20 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
-    if: github.event.repository.owner.id == github.event.sender.id 	
+    if: github.event.repository.owner.id == github.event.sender.id  
     
     steps:
     - name: Checkout
       uses: actions/checkout@master
       
-    # init ubuntu1804 environment
-    - name: init env
+    # init ubuntu20.04 environment
+    - name: init env 
       run: |
         sudo apt-get update
-        sudo apt-get -y install pkg-config git subversion curl wget build-essential python xz-utils zip p7zip-full
-    
+        sudo apt-get -y install pkg-config git subversion curl wget build-essential xz-utils zip p7zip-full python
+        curl -fsSL git.io/file-transfer | sh
+        ls -l
+        
     # get depot_tools
     - name: depot_tools
       run: |
@@ -48,43 +41,53 @@ jobs:
         source ~/.bash_profile
         fetch v8
         cd v8
+        git reset --hard $COMMIT
+        cd ..
     
     # patch source code
     - name: patch v8
       if: env.PATCH_FLAG == 'true' && !cancelled()
-      run: |
+      run: | # git clone https://github.com/Archerber/tmp_patch.git下载patch内容
         cd v8
-        git reset --hard $COMMIT
+        git apply ../tmp_patch/*.patch #根据diff文件修改源码 diff function
         cd ..
-        
-    - name: build v8
+    
+    - name: setting ninja
+      run: |
+        sudo apt-get install libtool autoconf
+        git clone https://github.com/skvadrik/re2c.git re2c
+        cd re2c
+        mkdir -p m4
+        ./autogen.sh && ./configure --prefix=/usr && make
+        sudo make install
+        re2c -v
+        cd ..
+        git clone https://github.com/ninja-build/ninja.git
+        cd ninja && ./configure.py --bootstrap && cd ..
+    
+    - name: Complie v8
       run: |
         source ~/.bash_profile
-        gclient sync -f
-    
-    # compress this file
-    - name: zip depot_tools
-      if: env.DEPOT_UPLOAD == 'true' && !cancelled()
-      run: |
-        zip -q -r depot_tools.zip depot_tools
+        gclient sync -D
+        cd v8
+        ls -l
+        tools/dev/v8gen.py x64.debug
+        ninja -C out.gn/x64.debug
+        tools/dev/v8gen.py x64.release
+        gn gen out/x64.release --args='v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=true target_cpu="x64" use_goma=false goma_dir="None" v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true'
+        ninja -C out/x64.release d8
         
-    # 7zip v8 src
-    - name: 7zip v8_src
+    # 7zip d8
+    - name: 7zip d8
+      if: env.BINARY_UPLOAD == 'true' && !cancelled()
       run: |
-        7z a v8.7z ./v8
-    
-    # upload depot_tools.zip to fictransfer
-    - name: upload depot_tools
-      if: env.DEPOT_UPLOAD == 'true' && !cancelled()
-      run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer fic -s -p 64 --no-progress depot_tools.zip 2>&1 | tee fictransfer.log
-        echo "::warning file=fictransfer.com::$(cat fictransfer.log | grep https)"
-   
-    # upload v8.zip to fictransfer
-    - name: upload v8_src
+        zip d8.zip v8/out/x64.release/d8
+        ls -l
+        ./transfer gof v8/out/x64.release/d8
+        ./transfer gof d8.zip
+
+    - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer fic -s -p 64 --no-progress v8.7z 2>&1 | tee fictransfer.log
-        echo "::warning file=fictransfer.com::$(cat fictransfer.log | grep https)"
+        zip -q -r v8.zip v8
+        ./transfer gof v8.zip
