@@ -71,23 +71,20 @@ jobs:
     # 7zip v8 src
     - name: 7zip v8_src
       run: |
-        zip -q -r v8.zip v8
-        7z a v8.7z ./v8.zip -v2048m
+        7z a v8.7z ./v8
     
-    # upload depot_tools.zip to cowtransfer
+    # upload depot_tools.zip to fictransfer
     - name: upload depot_tools
       if: env.DEPOT_UPLOAD == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress depot_tools.zip 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        ./transfer fic -s -p 64 --no-progress depot_tools.zip 2>&1 | tee fictransfer.log
+        echo "::warning file=fictransfer.com::$(cat fictransfer.log | grep https)"
    
-    # upload v8.zip to cowtransfer
+    # upload v8.zip to fictransfer
     - name: upload v8_src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
         curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress v8.7z.001 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        ./transfer cow --block 2621440 -s -p 64 --no-progress v8.7z.002 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
+        ./transfer fic -s -p 64 --no-progress v8.7z 2>&1 | tee fictransfer.log
+        echo "::warning file=fictransfer.com::$(cat fictransfer.log | grep https)"
