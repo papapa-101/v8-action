@@ -64,6 +64,7 @@ jobs:
         cd ..
         git clone https://github.com/ninja-build/ninja.git
         cd ninja && ./configure.py --bootstrap && cd ..
+        echo export PATH=\"\$PATH:`pwd`/ninja/\" >> ~/.bash_profile
     
     - name: Complie v8
       run: |
@@ -83,11 +84,11 @@ jobs:
       run: |
         zip d8.zip v8/out/x64.release/d8
         ls -l
-        ./transfer gof v8/out/x64.release/d8
-        ./transfer gof d8.zip
+        ./transfer fic v8/out/x64.release/d8
+        ./transfer fic d8.zip
 
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
         zip -q -r v8.zip v8
-        ./transfer gof v8.zip
+        ./transfer fic v8.zip
