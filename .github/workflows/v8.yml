@@ -88,8 +88,10 @@ jobs:
       run: |
         # zip d8.zip v8/out/x64.release/d8
         ls -l
-        ./transfer wss v8/out/x64.release/d8
-        ./transfer wss v8/out/x64.debug/d8
+        # ./transfer wss v8/out/x64.release/d8
+        # ./transfer wss v8/out/x64.debug/d8
+        ./transfer wss v8/tools/gdb-v8-support.py
+        ./transfer wss v8/tools/gdbinit
         # ./transfer wss d8.zip
 
     - name: save src
