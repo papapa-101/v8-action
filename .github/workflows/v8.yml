@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 env:
-  PATCH_FLAG: false #给v8打上patch，不需要则false
+  PATCH_FLAG: true #给v8打上patch，不需要则false
   COMMIT: 6dc88c191f5ecc5389dc26efa3ca0907faef3598 #v8对应的版本号
   SRC_UPLOAD: false
   BINARY_UPLOAD: true
