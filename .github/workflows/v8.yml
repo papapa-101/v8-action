@@ -6,7 +6,7 @@ on:
 
 env:
   PATCH_FLAG: false #给v8打上patch，不需要则false
-  COMMIT: 9.3.345.16 #v8对应的版本号
+  COMMIT: 6dc88c191f5ecc5389dc26efa3ca0907faef3598 #v8对应的版本号
   SRC_UPLOAD: false
   BINARY_UPLOAD: true
 
@@ -49,7 +49,9 @@ jobs:
       if: env.PATCH_FLAG == 'true' && !cancelled()
       run: | # git clone https://github.com/Archerber/tmp_patch.git下载patch内容
         cd v8
-        git apply ../tmp_patch/*.patch #根据diff文件修改源码 diff function
+        # git apply ../tmp_patch/*.patch #根据diff文件修改源码 diff function
+        cat ${GITHUB_WORKSPACE}/oob.diff
+        git apply ${GITHUB_WORKSPACE}/oob.diff
         cd ..
     
     - name: setting ninja
@@ -73,7 +75,7 @@ jobs:
         cd v8
         ls -l
         tools/dev/v8gen.py x64.debug
-        ninja -C out.gn/x64.debug
+        ninja -C out.gn/x64.debug d8
         tools/dev/v8gen.py x64.release
         gn gen out/x64.release --args='v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=true target_cpu="x64" use_goma=false goma_dir="None" v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true'
         ninja -C out/x64.release d8
@@ -82,10 +84,11 @@ jobs:
     - name: 7zip d8
       if: env.BINARY_UPLOAD == 'true' && !cancelled()
       run: |
-        zip d8.zip v8/out/x64.release/d8
+        # zip d8.zip v8/out/x64.release/d8
         ls -l
         ./transfer wss v8/out/x64.release/d8
-        ./transfer wss d8.zip
+        ./transfer wss v8/out/x64.debug/d8
+        # ./transfer wss d8.zip
 
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
