@@ -86,13 +86,16 @@ jobs:
     - name: 7zip d8
       if: env.BINARY_UPLOAD == 'true' && !cancelled()
       run: |
-        # zip d8.zip v8/out/x64.release/d8
-        ls -l
-        ./transfer wss v8/out/x64.release/d8
-        ./transfer wss v8/out/x64.debug/d8
-        ./transfer wss v8/tools/gdb-v8-support.py
-        ./transfer wss v8/tools/gdbinit
-        # ./transfer wss d8.zip
+        ls -la
+        zip -q -r d8.zip v8/out
+        zip -q -r tools.zip v8/tools
+        
+        # ./transfer wss v8/out/x64.release/d8
+        # ./transfer wss v8/out/x64.debug/d8
+        # ./transfer wss v8/tools/gdb-v8-support.py
+        # ./transfer wss v8/tools/gdbinit
+        ./transfer wss d8.zip
+        ./transfer wss tools.zip
 
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
