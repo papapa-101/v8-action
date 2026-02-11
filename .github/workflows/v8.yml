@@ -25,7 +25,7 @@ jobs:
     - name: init env 
       run: |
         sudo apt-get update
-        sudo apt-get -y install pkg-config git subversion curl wget build-essential xz-utils zip p7zip-full python3
+        sudo apt-get -y install pkg-config git subversion curl wget build-essential xz-utils zip p7zip-full python2
         curl -fsSL git.io/file-transfer | sh
         ls -l
         
