@@ -26,7 +26,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y install pkg-config git subversion curl wget build-essential xz-utils zip p7zip-full python3
-        curl -fsSL git.io/file-transfer | sh
+        # curl -fsSL git.io/file-transfer | sh
+        curl -sL https://git.io/file-transfer | sh 
         ls -l
         
     # get depot_tools
@@ -93,10 +94,10 @@ jobs:
         # zip -q -r d8.zip v8/out
         # zip -q -r tools.zip v8/tools
         
-        ./transfer gof v8/out/x64.release/d8
+        ./transfer wss v8/out/x64.release/d8
         # ./transfer wss v8/out/x64.debug/d8
-        ./transfer gof v8/tools/gdb-v8-support.py
-        ./transfer gof v8/tools/gdbinit
+        ./transfer wss v8/tools/gdb-v8-support.py
+        ./transfer wss v8/tools/gdbinit
         # ./transfer wss d8.zip
         # ./transfer wss tools.zip
     - name: save src
