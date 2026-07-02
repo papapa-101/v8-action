@@ -53,10 +53,10 @@ jobs:
         zip -q -r v8.zip v8
         ls -lh v8.zip
         
-        7z a v8.7z ./v8.zip -v50m
+        7z a v8.7z ./v8.zip -v2048m
         ls -lah
 
-        find . -name "v8.7z.0*" -exec ./transfer wss {} \;
+        find . -name "v8.7z.*" -exec ./transfer fic {} \;
         # ./transfer wss v8.7z.001
         # ./transfer wss v8.7z.002
         # ./transfer wss v8.7z.003
