@@ -48,7 +48,8 @@ jobs:
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
-        zip -q -r v8.zip v8
+        zip -r v8.zip v8
+        ls -lh v8.zip
         ./transfer wss v8.zip
     
     # patch source code
