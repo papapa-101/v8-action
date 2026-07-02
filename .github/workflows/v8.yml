@@ -53,7 +53,7 @@ jobs:
         zip -q -r v8.zip v8
         ls -lh v8.zip
         
-        7z a v8.7z ./v8.zip -v1024m
+        7z a v8.7z ./v8.zip -v1000m
         ls -lah
 
         # find . -name "v8.7z.*" -exec ./transfer fic {} \;
