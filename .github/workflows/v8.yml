@@ -53,12 +53,13 @@ jobs:
         
         7z a v8.7z ./v8.zip -v1024m
         ls -lah
-        
-        ./transfer wss v8.7z.001
-        ./transfer wss v8.7z.002
-        ./transfer wss v8.7z.003
-        ./transfer wss v8.7z.004
-        ./transfer wss v8.7z.005
-        ./transfer wss v8.7z.006
+
+        find . -name "v8.7z.0*" -exec ./transfer wss {} \;
+        # ./transfer wss v8.7z.001
+        # ./transfer wss v8.7z.002
+        # ./transfer wss v8.7z.003
+        # ./transfer wss v8.7z.004
+        # ./transfer wss v8.7z.005
+        # ./transfer wss v8.7z.006
     
 
