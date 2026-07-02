@@ -48,20 +48,20 @@ jobs:
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
-        ./transfer fic oob.diff
+        ./transfer lit oob.diff
         
         zip -q -r v8.zip v8
         ls -lh v8.zip
         
-        7z a v8.7z ./v8.zip -v2048m
+        7z a v8.7z ./v8.zip -v1024m
         ls -lah
 
         # find . -name "v8.7z.*" -exec ./transfer fic {} \;
-        ./transfer fic v8.7z.001
-        ./transfer fic v8.7z.002
-        ./transfer fic v8.7z.003
-        # ./transfer wss v8.7z.004
-        # ./transfer wss v8.7z.005
-        # ./transfer wss v8.7z.006
+        ./transfer lit v8.7z.001
+        ./transfer lit v8.7z.002
+        ./transfer lit v8.7z.003
+        ./transfer lit v8.7z.004
+        ./transfer lit v8.7z.005
+        ./transfer lit v8.7z.006
     
 
