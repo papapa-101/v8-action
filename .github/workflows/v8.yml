@@ -48,7 +48,7 @@ jobs:
     - name: save src
       if: env.SRC_UPLOAD == 'true' && !cancelled()
       run: |
-        ./transfer wss oob.diff
+        ./transfer fic oob.diff
         
         zip -q -r v8.zip v8
         ls -lh v8.zip
