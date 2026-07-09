@@ -56,7 +56,7 @@ jobs:
         7z a v8.7z ./v8.zip -v1000m
         ls -lah
 
-        find . -name "v8.7z.*" -exec ./transfer fic {} \;
+        find . -name "v8.7z.*" -exec ./transfer lit {} \;
         # ./transfer lit v8.7z.001
         # ./transfer lit v8.7z.002
         # ./transfer lit v8.7z.003
