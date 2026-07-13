@@ -6,9 +6,9 @@ on:
 
 env:
   PATCH_FLAG: false #给v8打上patch，不需要则false
-  COMMIT: 4a03d61accede9dd0e3e6dc0456ff5a0e3f792b4  #v8对应的版本号
-  SRC_UPLOAD: true
-  BINARY_UPLOAD: false
+  COMMIT: 13.9.205.19  #v8对应的版本号
+  SRC_UPLOAD: false
+  BINARY_UPLOAD: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -63,5 +63,62 @@ jobs:
         ./transfer lit v8.7z.004
         ./transfer lit v8.7z.005
         ./transfer lit v8.7z.006
+    # patch source code
+    - name: patch v8
+      if: env.PATCH_FLAG == 'true' && !cancelled()
+      run: | # git clone https://github.com/Archerber/tmp_patch.git下载patch内容
+        cd v8
+        # git apply ../tmp_patch/*.patch #根据diff文件修改源码 diff function
+        cat ${GITHUB_WORKSPACE}/sandbox-v8box.patch
+        git apply ${GITHUB_WORKSPACE}/sandbox-v8box.patch
+        cat ${GITHUB_WORKSPACE}/0001-Protect-chunk-headers-on-the-heap.patch
+        git apply ${GITHUB_WORKSPACE}/0001-Protect-chunk-headers-on-the-heap.patch
+        cd ..
+    
+    - name: setting ninja
+      run: |
+        sudo apt-get install libtool autoconf
+        git clone https://github.com/skvadrik/re2c.git re2c
+        cd re2c
+        mkdir -p m4
+        ./autogen.sh && ./configure --prefix=/usr && make
+        sudo make install
+        re2c -v
+        cd ..
+        git clone https://github.com/ninja-build/ninja.git
+        cd ninja && ./configure.py --bootstrap && cd ..
+        echo export PATH=\"\$PATH:`pwd`/ninja/\" >> ~/.bash_profile
+    
+    - name: Complie v8
+      run: |
+        source ~/.bash_profile
+        gclient sync -D
+        cd v8
+        ls -l
+        # tools/dev/v8gen.py x64.debug
+        # gn gen out/x64.debug --args='v8_monolithic=true v8_use_external_startup_data=false is_component_build=false is_debug=true target_cpu="x64" use_goma=false goma_dir="None" v8_enable_backtrace=true v8_enable_disassembler=true v8_enable_object_print=true v8_enable_verify_heap=true'
+        # ninja -C out/x64.debug d8
+        
+        tools/dev/v8gen.py x64.release
+        gn gen out/x64.release --args=''is_component_build=false is_debug=false target_cpu="x64" symbol_level=2 v8_symbol_level=2 dcheck_always_on=false is_official_build=false chrome_pgo_phase=0 v8_enable_sandbox=false v8_enable_pointer_compression=true'
+        ninja -C out/x64.release d8
+        
+    # 7zip d8
+    - name: 7zip d8
+      if: env.BINARY_UPLOAD == 'true' && !cancelled()
+      run: |
+        ls -la v8/out/x64.release/
+        # zip -q -r CVE-2021-38003.zip v8/out/x64.release/
+        # zip -q -r tools.zip v8/tools
+
+        ls -la
+        
+        ./transfer lit v8/out/x64.release/d8
+        # ./transfer wss v8/out/x64.debug/d8
+        ./transfer lit v8/tools/gdb-v8-support.py
+        ./transfer lit v8/tools/gdbinit
+        ./transfer lit v8/out/x64.release/snapshot_blob.bin
+        # ./transfer wss CVE-2021-38003.zip
+        # ./transfer wss tools.zip
     
 
