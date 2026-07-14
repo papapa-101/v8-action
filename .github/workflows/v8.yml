@@ -101,7 +101,7 @@ jobs:
         # ninja -C out/x64.debug d8
         
         tools/dev/v8gen.py x64.release
-        gn gen out/x64.release --args='is_debug=false target_cpu="x64" symbol_level=2 v8_enable_object_print=true v8_enable_object_print=true v8_enable_disassembler=true v8_enable_gdbjit=true v8_enable_slow_dchecks=false dcheck_always_on=false is_component_build=false v8_enable_backtrace=true'
+        gn gen out/x64.release --args='is_component_build=false is_debug=false target_cpu="x64" symbol_level=2 v8_enable_object_print=true v8_enable_object_print=true v8_enable_disassembler=true v8_enable_gdbjit=true v8_enable_slow_dchecks=false dcheck_always_on=false is_component_build=false v8_enable_backtrace=true'
         ninja -C out/x64.release d8
         
     # 7zip d8
