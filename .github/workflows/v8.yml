@@ -101,7 +101,7 @@ jobs:
         # ninja -C out/x64.debug d8
         
         tools/dev/v8gen.py x64.release
-        gn gen out/x64.release --args='v8_enable_i18n_support=true is_component_build=false is_debug=false target_cpu="x64" symbol_level=2 v8_symbol_level=2 dcheck_always_on=false is_official_build=false chrome_pgo_phase=0 v8_enable_sandbox=false v8_enable_pointer_compression=true'
+        gn gen out/x64.release --args='is_debug=false target_cpu="x64"'
         ninja -C out/x64.release d8
         
     # 7zip d8
@@ -109,17 +109,26 @@ jobs:
       if: env.BINARY_UPLOAD == 'true' && !cancelled()
       run: |
         ls -la v8/out/x64.release/
-        # zip -q -r CVE-2021-38003.zip v8/out/x64.release/
+        zip -q -r release.zip v8/out/x64.release/
         # zip -q -r tools.zip v8/tools
 
-        ls -la
-        
-        ./transfer lit v8/out/x64.release/d8
+        ls -lh release.zip
+
+        7z a release.7z ./release.zip -v1000m
+        ls -lah
+
+        ./transfer lit release.7z.001
+        ./transfer lit release.7z.002
+        ./transfer lit release.7z.003
+        ./transfer lit release.7z.004
+        ./transfer lit release.7z.005
+        ./transfer lit release.7z.006
+        # ./transfer lit v8/out/x64.release/d8
         # ./transfer wss v8/out/x64.debug/d8
-        ./transfer lit v8/tools/gdb-v8-support.py
-        ./transfer lit v8/tools/gdbinit
-        ./transfer lit v8/out/x64.release/snapshot_blob.bin
-        ./transfer lit v8/out/x64.release/icudtl.dat
+        # ./transfer lit v8/tools/gdb-v8-support.py
+        # ./transfer lit v8/tools/gdbinit
+        # ./transfer lit v8/out/x64.release/snapshot_blob.bin
+        # ./transfer lit v8/out/x64.release/icudtl.dat
         # ./transfer wss CVE-2021-38003.zip
         # ./transfer wss tools.zip
     
