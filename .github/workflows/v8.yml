@@ -6,7 +6,7 @@ on:
 
 env:
   PATCH_FLAG: false #给v8打上patch，不需要则false
-  COMMIT: debba63b78f8791411bff379835982cb2e8cabfa  #v8对应的版本号
+  COMMIT: fe051262efbbd92479a08436f733eba9f756e008  #v8对应的版本号
   SRC_UPLOAD: false
   BINARY_UPLOAD: true
 
