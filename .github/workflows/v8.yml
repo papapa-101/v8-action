@@ -101,7 +101,7 @@ jobs:
         # ninja -C out/x64.debug d8
         
         tools/dev/v8gen.py x64.release
-        gn gen out/x64.release --args='is_debug=false target_cpu="x64"'
+        gn gen out/x64.release --args='is_debug=false target_cpu="x64" symbol_level=2 v8_enable_object_print=true v8_enable_object_print=true v8_enable_disassembler=true v8_enable_gdbjit=true v8_enable_slow_dchecks=false dcheck_always_on=false is_component_build=false v8_enable_backtrace=true'
         ninja -C out/x64.release d8
         
     # 7zip d8
@@ -109,26 +109,26 @@ jobs:
       if: env.BINARY_UPLOAD == 'true' && !cancelled()
       run: |
         ls -la v8/out/x64.release/
-        zip -q -r release.zip v8/out/x64.release/
+        # zip -q -r release.zip v8/out/x64.release/
         # zip -q -r tools.zip v8/tools
 
-        ls -lh release.zip
+        # ls -lh release.zip
 
-        7z a release.7z ./release.zip -v1000m
+        # 7z a release.7z ./release.zip -v1000m
         ls -lah
 
-        ./transfer lit release.7z.001
-        ./transfer lit release.7z.002
-        ./transfer lit release.7z.003
-        ./transfer lit release.7z.004
-        ./transfer lit release.7z.005
-        ./transfer lit release.7z.006
-        # ./transfer lit v8/out/x64.release/d8
+        #./transfer lit release.7z.001
+        #./transfer lit release.7z.002
+        #./transfer lit release.7z.003
+        #./transfer lit release.7z.004
+        #./transfer lit release.7z.005
+        #./transfer lit release.7z.006
+        ./transfer lit v8/out/x64.release/d8
         # ./transfer wss v8/out/x64.debug/d8
-        # ./transfer lit v8/tools/gdb-v8-support.py
-        # ./transfer lit v8/tools/gdbinit
-        # ./transfer lit v8/out/x64.release/snapshot_blob.bin
-        # ./transfer lit v8/out/x64.release/icudtl.dat
+        ./transfer lit v8/tools/gdb-v8-support.py
+        ./transfer lit v8/tools/gdbinit
+        ./transfer lit v8/out/x64.release/snapshot_blob.bin
+        ./transfer lit v8/out/x64.release/icudtl.dat
         # ./transfer wss CVE-2021-38003.zip
         # ./transfer wss tools.zip
     
